@@ -12,22 +12,22 @@ Table of Contents
 =================
 
 * [About](#about)
-   * [Features](#features)
-   * [How it works](#how-it-works)
-   * [Tech stack](#tech-stack)
-   * [How to run locally](#how-to-run-locally)
-   * [How to Deploy](#how-to-deploy)
-      * [Docker](#docker)
-      * [Google app engine](#google-app-engine)
-   * [Development](#development)
-         * [Clone repos](#clone-repos)
-         * [Start docker](#start-docker)
-         * [Start watcher](#start-watcher)
-   * [How to integrate](#how-to-integrate)
-   * [Other](#other)
-      * [DB Migrations](#db-migrations)
-      * [API Admin](#api-admin)
-      * [CSS](#css)
+* [Features](#features)
+* [How it works](#how-it-works)
+* [Tech stack](#tech-stack)
+* [How to run locally](#how-to-run-locally)
+* [How to Deploy](#how-to-deploy)
+  * [Docker](#docker)
+  * [Google app engine](#google-app-engine)
+* [Development](#development)
+  * [Clone repos](#clone-repos)
+  * [Start docker](#start-docker)
+  * [Start watcher](#start-watcher)
+* [How to integrate](#how-to-integrate)
+* [Other](#other)
+  * [DB Migrations](#db-migrations)
+  * [API Admin](#api-admin)
+  * [CSS](#css)
 
 ## About
 
@@ -43,16 +43,21 @@ This repo contains examples on how to run the back-end services of peer metrics:
 ## Features
 
 #### View app overview
+![image](https://github.com/peermetrics/peermetrics/assets/1862405/ec27ac03-9b85-439c-9630-fcc5fa7c80cf)
 
 #### Drilldown into conference
+![image](https://github.com/peermetrics/peermetrics/assets/1862405/32715cc0-bb73-4bbb-82dd-3d236452355a)
 
 #### See detailed connection timeline
+![image](https://github.com/peermetrics/peermetrics/assets/1862405/a0333090-d192-4099-88d3-75343d12bdb0)
 
 #### Advanced quality graphs
+![image](https://github.com/peermetrics/peermetrics/assets/1862405/9bb4981a-71bb-4995-b29f-7a135469d036)
 
 #### Automatically detected issues
-
 For a whole list check [ISSUES.md](ISSUES.md)
+
+![image](https://github.com/peermetrics/peermetrics/assets/1862405/be67c082-7220-432a-8843-fd9788dac6e9)
 
 ## How it works
 
