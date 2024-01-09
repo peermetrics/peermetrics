@@ -1,0 +1,87 @@
+version: '3.7'
+
+services:
+  nginx:
+    build: ./nginx
+    ports:
+      - 8081:8081
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - api_static:/app/api
+
+    depends_on:
+      - api
+
+    restart: "on-failure"
+
+  api:
+    image: peermetrics/api:latest
+
+    command: >
+      sh -c "python manage.py makemigrations && 
+      python manage.py migrate &&
+      gunicorn api.wsgi:application --bind 0.0.0.0:8081 --log-level info"
+
+    volumes:
+      - api_static:/app/static
+
+    expose:
+      - 8081
+
+    environment:
+      DEBUG: "False"
+
+      DJANGO_SETTINGS_MODULE: "api.settings"
+      SECRET_KEY: "secret"
+
+      # Used to generate the JWT token
+      # CHANGE THIS IN PRODUCTION
+      INIT_TOKEN_SECRET: "supersecret"
+
+      # used to encrypt the session cookie
+      # CHANGE THIS IN PRODUCTION
+      SESSION_TOKEN_SECRET: "secret"
+
+      WEB_DOMAIN: "localhost:8080"
+
+      # 
+      # Redis config
+      # 
+      # Location of redis server
+      REDIS_HOST: "redis://127.0.0.1:6379"
+
+      # 
+      # DB config
+      # 
+      DATABASE_HOST: "postgres"
+      DATABASE_PORT: "5432"
+      DATABASE_USER: "peeruser"
+      DATABASE_PASSWORD: "peeruser"
+      DATABASE_NAME: "peerdb"
+      CONN_MAX_AGE: "14400"
+
+      # if we should delete all the unneeded stats events after the conference ends
+      POST_CONFERENCE_CLEANUP: "False"
+
+      # 
+      # App engine
+      # 
+      # If the app is deployed on app engine
+
+      # 
+      # Google cloud logging
+      # 
+      # Enable logging in Google cloud logging
+      # USE_GOOGLE_CLOUD_LOGGING: "True"
+
+      # 
+      # Google cloud tasks
+      # 
+      # If you want to use google task queue
+      # USE_GOOGLE_TASK_QUEUE: "True"
+      # GOOGLE_TASK_QUEUE_NAME: "queue-1"
+      # APP_ENGINE_LOCATION: "us-east1"
+      # TASK_QUEUE_DOMAIN: 'https://api.example.com/'
+
+volumes:
+  api_static:

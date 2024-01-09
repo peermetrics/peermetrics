@@ -1,0 +1,4 @@
+FROM postgres:12.8
+
+# not the cleanest solution but it adds the script that will enable the extentsion
+RUN  echo 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "CREATE EXTENSION pg_trgm;"' > /docker-entrypoint-initdb.d/load-extension.sh
