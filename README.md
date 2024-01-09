@@ -8,8 +8,26 @@ peer metrics offers fully open source client SDKs and back-end services for you 
 
 For hosted versions check [peermetrics.io](https://peermetrics.io/).
 
+Table of Contents
+=================
 
-[TOC]
+* [About](#about)
+   * [Features](#features)
+   * [How it works](#how-it-works)
+   * [Tech stack](#tech-stack)
+   * [How to run locally](#how-to-run-locally)
+   * [How to Deploy](#how-to-deploy)
+      * [Docker](#docker)
+      * [Google app engine](#google-app-engine)
+   * [Development](#development)
+         * [Clone repos](#clone-repos)
+         * [Start docker](#start-docker)
+         * [Start watcher](#start-watcher)
+   * [How to integrate](#how-to-integrate)
+   * [Other](#other)
+      * [DB Migrations](#db-migrations)
+      * [API Admin](#api-admin)
+      * [CSS](#css)
 
 ## About
 
@@ -24,21 +42,21 @@ This repo contains examples on how to run the back-end services of peer metrics:
 
 ## Features
 
-View app overview
+#### View app overview
 
-Drilldown into conference
+#### Drilldown into conference
 
-See detailed connection timeline
+#### See detailed connection timeline
 
-Advanced quality graphs
+#### Advanced quality graphs
 
-Automatically detected issues
+#### Automatically detected issues
 
 For a whole list check [ISSUES.md](ISSUES.md)
 
-## Architecture
+## How it works
 
-peer metrics consists of three components:
+peer metrics contains all the components you need to monitor and improve your WebRTC app:
 
 - **client SDKs**: used for collecting metrics from client devices (right now we only support the [JavaScript SDK)](https://github.com/peermetrics/sdk-js).
 - **ingestion endpoint**: this is a server where the SDK sends the metrics collected (this is the [api](https://github.com/peermetrics/api) service).
