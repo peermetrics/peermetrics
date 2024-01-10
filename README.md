@@ -12,22 +12,23 @@ Table of Contents
 =================
 
 * [About](#about)
-   * [Features](#features)
-   * [How it works](#how-it-works)
-   * [Tech stack](#tech-stack)
-   * [How to run locally](#how-to-run-locally)
-   * [How to Deploy](#how-to-deploy)
-      * [Docker](#docker)
-      * [Google app engine](#google-app-engine)
-   * [Development](#development)
-         * [Clone repos](#clone-repos)
-         * [Start docker](#start-docker)
-         * [Start watcher](#start-watcher)
-   * [How to integrate](#how-to-integrate)
-   * [Other](#other)
-      * [DB Migrations](#db-migrations)
-      * [API Admin](#api-admin)
-      * [CSS](#css)
+* [Features](#features)
+* [How it works](#how-it-works)
+* [Tech stack](#tech-stack)
+* [How to run locally](#how-to-run-locally)
+* [How to Deploy](#how-to-deploy)
+     * [Docker](#docker)
+     * [Google app engine](#google-app-engine)
+* [Development](#development)
+      * [Clone repos](#clone-repos)
+      * [Start docker](#start-docker)
+      * [Start watcher](#start-watcher)
+* [How to integrate](#how-to-integrate)
+* [Other](#other)
+     * [DB Migrations](#db-migrations)
+     * [API Admin](#api-admin)
+     * [CSS](#css)
+* [FAQ](#faq)
 
 ## About
 
@@ -239,4 +240,4 @@ If your team reaches a point where the limiting factor is PostgreSQL, we would l
 
 #### What does the `POST_CONFERENCE_CLEANUP` flag do?
 
-As volume of data stored, the `GenericEvent` model takes up a huge percentage of it. Drill down, a big percentage of that are the events for the `stats` data. At the end of the conference we create a summary for it so these events are not really needed. This flag will delete all of those `stats` events remove the bloat from the DB.
+As volume of data stored in the DB, the `GenericEvent` model takes a big percentage of that. Drilling down, a big percentage of that is made of `stats` events. At the end of the conference, we go through all of those events and create a summary for it so they are not really needed afterwards. This flag will delete all of the `stats` events for that conference.
