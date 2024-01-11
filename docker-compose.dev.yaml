@@ -12,9 +12,9 @@ services:
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
-      - web_static:/app/web
-      - api_static:/app/api
-      - node_modules:/app/node_modules
+      - ./web/static:/app/web
+      - ./api/static:/app/api
+      - ./web/node_modules:/app/node_modules
 
     depends_on:
       - api
@@ -34,8 +34,6 @@ services:
     working_dir: /app
     volumes:
       - ./web:/app
-      - web_static:/app/static
-      - node_modules:/app/node_modules
 
     expose:
       - 8080
@@ -59,6 +57,10 @@ services:
       DATABASE_NAME: "peerdb"
       CONN_MAX_AGE: "14400"
 
+    depends_on:
+      - postgres
+      - redis
+
     restart: "on-failure"
 
   api:
@@ -76,7 +78,6 @@ services:
     working_dir: /app
     volumes:
       - ./api:/app
-      - api_static:/app/static
 
     expose:
       - 8081
@@ -134,6 +135,10 @@ services:
       # APP_ENGINE_LOCATION: "us-east1"
       # TASK_QUEUE_DOMAIN: 'https://api.example.com/'
 
+    depends_on:
+      - postgres
+      - redis
+
     restart: "on-failure"
 
   postgres:
@@ -163,6 +168,3 @@ services:
 volumes:
   postgres_data:
   redis_data:
-  web_static:
-  node_modules:
-  api_static:
