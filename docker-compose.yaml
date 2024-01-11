@@ -48,6 +48,10 @@ services:
       DATABASE_NAME: "peerdb"
       CONN_MAX_AGE: "14400"
 
+    depends_on:
+      - postgres
+      - redis
+
     restart: "on-failure"
 
   api:
@@ -118,6 +122,10 @@ services:
       # GOOGLE_TASK_QUEUE_NAME: "queue-1"
       # APP_ENGINE_LOCATION: "us-east1"
       # TASK_QUEUE_DOMAIN: 'https://api.example.com/'
+
+    depends_on:
+      - postgres
+      - redis
 
     restart: "on-failure"
 

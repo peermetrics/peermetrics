@@ -3,9 +3,12 @@ version: '3.7'
 services:
   nginx:
     build: ./nginx
+
     ports:
       - 8081:8081
+
     volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
       - api_static:/app/api
 
@@ -82,6 +85,8 @@ services:
       # GOOGLE_TASK_QUEUE_NAME: "queue-1"
       # APP_ENGINE_LOCATION: "us-east1"
       # TASK_QUEUE_DOMAIN: 'https://api.example.com/'
+
+    restart: "on-failure"
 
 volumes:
   api_static:
