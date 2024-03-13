@@ -20,13 +20,14 @@ Table of Contents
      * [Docker](#docker)
      * [Google app engine](#google-app-engine)
 * [Development](#development)
-      * [Clone repos](#clone-repos)
-      * [Start docker](#start-docker)
-      * [Start watcher](#start-watcher)
+     * [Clone repos](#clone-repos)
+     * [Start docker](#start-docker)
+     * [Start watcher](#start-watcher)
 * [How to integrate](#how-to-integrate)
 * [Other](#other)
      * [DB Migrations](#db-migrations)
      * [API Admin](#api-admin)
+     * [Dummy data](#dummy-data)
      * [CSS](#css)
 * [FAQ](#faq)
 
@@ -210,6 +211,14 @@ You'll also need to collectstatic:
 
 ```sh
 python manage.py collectstatic --clear --noinput
+```
+
+### Dummy data
+
+If you want to add some dummy data while developping, run this script (last number is the number of past days to populate):
+
+```sh
+docker-compose -f docker-compose.dev.yaml run api python populate_db.py 5
 ```
 
 ### CSS

@@ -101,7 +101,7 @@ services:
       CONN_MAX_AGE: "14400"
 
       # if we should delete all the unneeded stats events after the conference ends
-      POST_CONFERENCE_CLEANUP: "False"
+      POST_CONFERENCE_CLEANUP: "True"
 
       # 
       # App engine
