@@ -57,10 +57,7 @@ services:
   api:
     image: peermetrics/api:latest
 
-    command: >
-      sh -c "python manage.py makemigrations && 
-      python manage.py migrate &&
-      gunicorn api.wsgi:application --bind 0.0.0.0:8081 --log-level info"
+    command: "gunicorn api.wsgi:application --bind 0.0.0.0:8081 --log-level debug --reload"
 
     volumes:
       - api_static:/app/static

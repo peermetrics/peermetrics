@@ -89,13 +89,39 @@ Both **api** and **web** have the same backend:
 
 ## How to run locally
 
+### 1. Clone repo
+
 Fastest way to get started is to pull this repo and use docker compose
 
 ```sh
 git pull https://github.com/peermetrics/peermetrics
 cd peermetrics
+```
+
+##### 1.1 Run migrations
+
+Before running the containers for the first time we need to run the Django migrations. This is a one time step.
+
+```sh
+docker-compose run api sh
+```
+
+And inside the container, run:
+
+```sh
+python manage.py makemigrations app
+python manage.py migrate
+```
+
+### 2. Start docker
+
+Now you can simply start all the containers:
+
+```sh
 docker-compose up
 ```
+
+
 
 ## How to Deploy
 
@@ -149,6 +175,21 @@ git clone https://github.com/peermetrics/web
 
 ```sh
 git clone https://github.com/peermetrics/api
+```
+
+2. #### Run migrations
+
+Before running the containers for the first time we need to run the Django migrations. This is a one time step.
+
+```sh
+docker-compose -f docker-compose.dev.yaml run api sh
+```
+
+And inside the container, run:
+
+```sh
+python manage.py makemigrations app
+python manage.py migrate
 ```
 
 2. #### Start docker
