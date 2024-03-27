@@ -14,6 +14,7 @@ Table of Contents
 * [About](#about)
 * [Features](#features)
 * [How it works](#how-it-works)
+* [Demo](#demo)
 * [Tech stack](#tech-stack)
 * [How to run locally](#how-to-run-locally)
 * [How to Deploy](#how-to-deploy)
@@ -44,17 +45,22 @@ This repo contains examples on how to run the back-end services of peer metrics:
 
 ## Features
 
-#### View app overview
+### App dashboard
+The app dashboard is the best way to get an overview of how the your users are experiencing your app. On top of the usual metrics (browsers, OS, location, etc) you can see the most common issues overall so you know on what to focus.
+![image](https://github.com/peermetrics/peermetrics/assets/1862405/b9a541d9-6793-4e55-b604-c717ccab8edd)
 
-#### Drilldown into conference
+![image](https://github.com/peermetrics/peermetrics/assets/1862405/f06c88a1-6fca-42a9-879d-aa75947d2f38)
 
-#### See detailed connection timeline
+### Detailed participant details
+Get detailed reports for each participant (how they connected, their devices) and automatically detected issues.
+![image](https://github.com/peermetrics/peermetrics/assets/1862405/ee1a5c6e-794d-4c39-a2dd-1bbb94697440)
 
-#### Advanced quality graphs
+### Connection timelines
+Drilldown into each participant's connection to get insights about how their connection behaved during the whole call.
+![image](https://github.com/peermetrics/peermetrics/assets/1862405/1849dcf8-abc8-4292-8ef9-a35aed671ef0)
 
-#### Automatically detected issues
-
-For a whole list check [ISSUES.md](ISSUES.md)
+## Demo
+Try the live [DEMO](https://peermetrics.io/how-it-works).
 
 ## How it works
 
@@ -150,7 +156,7 @@ docker-compose -f docker-compose.dev.yaml up
 
 3. #### Start watcher
 
-Optionally, you can also start the watcher for the vue files:
+Start the watcher for the vue files:
 
 ```sh
 cd web
