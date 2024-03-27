@@ -1,8 +1,9 @@
-![logo](https://github.com/peermetrics/peermetrics/assets/1862405/f0984648-c4aa-4c3c-86f9-4f3535ec6a9b)
 
+<div align="center">
+    <img width="300px" src="https://github.com/peermetrics/peermetrics/assets/1862405/f0984648-c4aa-4c3c-86f9-4f3535ec6a9b" />
+</div>
 
 # peer metrics - WebRTC monitoring system
-
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://makeapullrequest.com)![GitHub License](https://img.shields.io/github/license/peermetrics/peermetrics)
 
 The all complete solution to monitor your WebRTC application.
