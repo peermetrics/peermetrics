@@ -1,12 +1,15 @@
-# peer metrics - WebRTC metrics analyzer
+![logo](https://github.com/peermetrics/peermetrics/assets/1862405/f0984648-c4aa-4c3c-86f9-4f3535ec6a9b)
+
+
+# peer metrics - WebRTC monitoring system
 
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://makeapullrequest.com)![GitHub License](https://img.shields.io/github/license/peermetrics/peermetrics)
 
-The all complete solution to monitor your WebRTC implementation.
+The all complete solution to monitor your WebRTC application.
 
-peer metrics offers fully open source client SDKs and back-end services for you to start collecting metrics and create the perfect product.
+peer metrics offers fully open source client SDKs, back-ends and dashboards so you can start collecting metrics get the best idea of what's working or not.
 
-For hosted versions check [peermetrics.io](https://peermetrics.io/).
+For a hosted version check [peermetrics.io](https://peermetrics.io/).
 
 Table of Contents
 =================
@@ -36,17 +39,18 @@ Table of Contents
 
 peer metrics is the complete solution to start monitoring your WebRTC implementation.
 
-The [javascript SDK](https://github.com/peermetrics/sdk-js) integrates with the major WebRTC libs like Livekit, Mediasoup, Janus, etc, [more here](https://github.com/peermetrics/sdk-js).
+Starting with the [javascript SDK](https://github.com/peermetrics/sdk-js) you can integrate with all the major WebRTC libs (Livekit, Mediasoup, Janus, etc.) or your custom implementation.
 
-This repo contains examples on how to run the back-end services of peer metrics: 
+This repo contains the services that are used to ingest and visualize those metrics:
 
-- api: the ingestion endpoint
-- web: the visualization service
+- [api](https://github.com/peermetrics/api): the ingestion endpoint
+- [web](https://github.com/peermetrics/web): the visualization service
 
 ## Features
 
 ### App dashboard
 The app dashboard is the best way to get an overview of how the your users are experiencing your app. On top of the usual metrics (browsers, OS, location, etc) you can see the most common issues overall so you know on what to focus.
+
 ![image](https://github.com/peermetrics/peermetrics/assets/1862405/b9a541d9-6793-4e55-b604-c717ccab8edd)
 
 ![image](https://github.com/peermetrics/peermetrics/assets/1862405/f06c88a1-6fca-42a9-879d-aa75947d2f38)
@@ -66,7 +70,7 @@ Try the live [DEMO](https://peermetrics.io/how-it-works).
 
 peer metrics contains all the components you need to monitor and improve your WebRTC app:
 
-- **client SDKs**: used for collecting metrics from client devices (right now we only support the [JavaScript SDK)](https://github.com/peermetrics/sdk-js).
+- **client SDKs**: used for collecting metrics from client devices (right now we only support the [JavaScript SDK](https://github.com/peermetrics/sdk-js)).
 - **ingestion endpoint**: this is a server where the SDK sends the metrics collected (this is the [api](https://github.com/peermetrics/api) service).
 - **visualization endpoint**: used by the dev / customer team to visualize the metrics collected (this is the [web](https://github.com/peermetrics/web) service).
 
@@ -87,9 +91,9 @@ Both **api** and **web** have the same backend:
 Fastest way to get started is to pull this repo and use docker compose
 
 ```sh
-git pull https://github.com/peermetrics/peermetrics .
+git pull https://github.com/peermetrics/peermetrics
 cd peermetrics
-docker-compose up --build
+docker-compose up
 ```
 
 ## How to Deploy
@@ -255,4 +259,6 @@ If your team reaches a point where the limiting factor is PostgreSQL, we would l
 
 #### What does the `POST_CONFERENCE_CLEANUP` flag do?
 
-As volume of data stored in the DB, the `GenericEvent` model takes a big percentage of that. Drilling down, a big percentage of that is made of `stats` events. At the end of the conference, we go through all of those events and create a summary for it so they are not really needed afterwards. This flag will delete all of the `stats` events for that conference.
+The `GenericEvent` model takes a big percentage of the data stored in the DB. Drilling down, a big percentage of that is made of `stats` events. At the end of the conference, we go through all of those events and create a summary, so the events are not really needed afterwards. 
+
+This flag will delete all the `stats` events for the just ended conference.
