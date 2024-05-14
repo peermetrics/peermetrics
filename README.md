@@ -103,7 +103,7 @@ cd peermetrics
 Before running the containers for the first time we need to run the Django migrations. This is a one time step.
 
 ```sh
-docker-compose run api sh
+docker compose run api sh
 ```
 
 And inside the container, run:
@@ -118,7 +118,7 @@ python manage.py migrate
 Now you can simply start all the containers:
 
 ```sh
-docker-compose up
+docker compose up
 ```
 
 
@@ -182,7 +182,7 @@ git clone https://github.com/peermetrics/api
 Before running the containers for the first time we need to run the Django migrations. This is a one time step.
 
 ```sh
-docker-compose -f docker-compose.dev.yaml run api sh
+docker compose -f docker-compose.dev.yaml run api sh
 ```
 
 And inside the container, run:
@@ -197,7 +197,7 @@ python manage.py migrate
 To start development start Docker using the special dev file:
 
 ```sh
-docker-compose -f docker-compose.dev.yaml up
+docker compose -f docker-compose.dev.yaml up
 ```
 
 3. #### Start watcher
@@ -241,9 +241,13 @@ let peerMetrics = new PeerMetrics({
 
 ### DB Migrations
 
-A think to note is that the **api** container runs the Django migrations automatically when it starts. 
+To run migration for the DB you need to use the `api` container:
 
-Details are in the docker compose files.
+```sh
+docker compose run api python manage.py migrate
+```
+
+
 
 ### API Admin
 
@@ -253,7 +257,7 @@ For that, you need to create a superuser:
 
 ```sh
 # sh into the api container
-docker-compose run api sh
+docker compose run api sh
 # run the createsuperuser command
 python manage.py createsuperuser --username admin --email admin@admin.com
 # it will ask for you to choose a password
@@ -270,7 +274,7 @@ python manage.py collectstatic --clear --noinput
 If you want to add some dummy data while developping, run this script (last number is the number of past days to populate):
 
 ```sh
-docker-compose -f docker-compose.dev.yaml run api python populate_db.py 5
+docker compose -f docker-compose.dev.yaml run api python populate_db.py 5
 ```
 
 ### CSS
