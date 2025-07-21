@@ -3,14 +3,12 @@
     <img width="300px" src="https://github.com/peermetrics/peermetrics/assets/1862405/f0984648-c4aa-4c3c-86f9-4f3535ec6a9b" />
 </div>
 
-# peer metrics - WebRTC monitoring system
+# Peermetrics - WebRTC monitoring system
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://makeapullrequest.com)![GitHub License](https://img.shields.io/github/license/peermetrics/peermetrics)
 
-The all complete solution to monitor your WebRTC application.
+A self-hosted solution to monitor your WebRTC application, [Peermetrics](https://peermetrics.io/) offers fully open source client SDKs, back-ends and dashboards so you can troubleshoot issues, optimize performance, and deliver better user experiences.
 
-peer metrics offers fully open source client SDKs, back-ends and dashboards so you can start collecting metrics get the best idea of what's working or not.
-
-For a hosted version check [peermetrics.io](https://peermetrics.io/).
+For scale, large workloads, production environments, or organizations preferring to focus on their core application rather than infrastructure management, WebRTC.ventures offers both managed service and custom implementations. Reach out to [WebRTC.ventures](https://webrtc.ventures/).
 
 Table of Contents
 =================
@@ -37,8 +35,6 @@ Table of Contents
 * [FAQ](#faq)
 
 ## About
-
-peer metrics is the complete solution to start monitoring your WebRTC implementation.
 
 Starting with the [javascript SDK](https://github.com/peermetrics/sdk-js) you can integrate with all the major WebRTC libs (Livekit, Mediasoup, Janus, etc.) or your custom implementation.
 
