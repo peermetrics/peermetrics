@@ -18,7 +18,7 @@ services:
   api:
     image: peermetrics/api:latest
 
-    command: "gunicorn api.wsgi:application --bind 0.0.0.0:8081 --log-level debug --reload"
+    # command removed - using entrypoint.sh now which runs migrations, creates admin user, and starts gunicorn
 
     volumes:
       - api_static:/app/static
@@ -31,6 +31,12 @@ services:
 
       DJANGO_SETTINGS_MODULE: "api.settings"
       SECRET_KEY: "secret"
+
+      # Default admin credentials (auto-created on first startup)
+      # CHANGE THESE IN PRODUCTION!
+      DEFAULT_ADMIN_USERNAME: "admin"
+      DEFAULT_ADMIN_PASSWORD: "admin"
+      DEFAULT_ADMIN_EMAIL: "admin@admin.com"
 
       # Used to generate the JWT token
       # CHANGE THIS IN PRODUCTION

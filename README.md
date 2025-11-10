@@ -27,6 +27,12 @@ Table of Contents
      * [Start docker](#start-docker)
      * [Start watcher](#start-watcher)
 * [How to integrate](#how-to-integrate)
+* [Authentication](#authentication)
+     * [Default Credentials](#default-credentials)
+     * [Changing Default Password](#changing-default-password)
+     * [Customizing Admin Credentials](#customizing-admin-credentials)
+     * [Rate Limiting](#rate-limiting)
+     * [Security Best Practices](#security-best-practices)
 * [Other](#other)
      * [DB Migrations](#db-migrations)
      * [API Admin](#api-admin)
@@ -94,21 +100,6 @@ git pull https://github.com/peermetrics/peermetrics
 cd peermetrics
 ```
 
-##### 1.1 Run migrations
-
-Before running the containers for the first time we need to run the Django migrations. This is a one time step.
-
-```sh
-docker compose run api sh
-```
-
-And inside the container, run:
-
-```sh
-python manage.py makemigrations app
-python manage.py migrate
-```
-
 ### 2. Start docker
 
 Now you can simply start all the containers:
@@ -116,6 +107,13 @@ Now you can simply start all the containers:
 ```sh
 docker compose up
 ```
+
+The API service will automatically:
+- Run database migrations
+- Create the default admin user (username: `admin`, password: `admin`)
+- Start the application
+
+**Note**: For production deployments, make sure to change the default admin password via environment variables (see [Authentication](#authentication) section).
 
 
 
@@ -173,27 +171,21 @@ git clone https://github.com/peermetrics/web
 git clone https://github.com/peermetrics/api
 ```
 
-2. #### Run migrations
-
-Before running the containers for the first time we need to run the Django migrations. This is a one time step.
-
-```sh
-docker compose -f docker-compose.dev.yaml run api sh
-```
-
-And inside the container, run:
-
-```sh
-python manage.py makemigrations app
-python manage.py migrate
-```
-
 2. #### Start docker
 
 To start development start Docker using the special dev file:
 
 ```sh
 docker compose -f docker-compose.dev.yaml up
+```
+
+The API service will automatically run migrations and create the default admin user on first startup.
+
+**Note**: For development with local code changes, you may need to run migrations manually if you modify models:
+
+```sh
+docker compose -f docker-compose.dev.yaml exec api python manage.py makemigrations app
+docker compose -f docker-compose.dev.yaml exec api python manage.py migrate
 ```
 
 3. #### Start watcher
@@ -232,6 +224,130 @@ let peerMetrics = new PeerMetrics({
 **Note**: very important that `apiRoot` is a valid URL and ends with `/v1`
 
 4. Follow the instructions in the [SDK repo](https://github.com/peermetrics/sdk-js) to start collecting metrics.
+
+## Authentication
+
+Peermetrics includes a Grafana-style authentication system that helps ensure secure access to your monitoring dashboards while maintaining ease of use during initial setup.
+
+### Default Credentials
+
+When you first start Peermetrics, a default admin account is automatically created:
+
+- **Username**: `admin`
+- **Password**: `admin`
+
+You can log in to the web interface at `http://localhost:8080/login` using these credentials.
+
+### Changing Default Password
+
+For security, Peermetrics uses a Grafana-inspired approach to handle default passwords:
+
+1. **Automatic Detection**: When you log in with the default password (`admin`), you'll be automatically redirected to a password change page with a security warning.
+
+2. **Password Change Prompt**: You'll see a clear message indicating you're using the default password and should change it.
+
+3. **Skip Option**: During development, you can skip the password change, but you'll be prompted again on your next login.
+
+4. **Password Requirements**: New passwords must be at least 8 characters long and pass Django's password validation checks.
+
+To change your password:
+- Log in with default credentials
+- You'll be redirected to the password change page
+- Enter your new password twice
+- Click "Change Password"
+
+Alternatively, navigate to `/change-password` anytime while logged in.
+
+### Customizing Admin Credentials
+
+For production deployments, you should customize the default admin credentials using environment variables. This is especially important when deploying with Docker.
+
+#### Environment Variables
+
+Set these environment variables in your `docker-compose.yaml` or `.env` files:
+
+**For API Service** (creates the admin user):
+```yaml
+environment:
+  DEFAULT_ADMIN_USERNAME: "admin"           # Default: admin
+  DEFAULT_ADMIN_PASSWORD: "your_secure_password"  # Default: admin
+  DEFAULT_ADMIN_EMAIL: "admin@yourcompany.com"    # Default: admin@admin.com
+```
+
+**For Web Service** (detects default password on login):
+```yaml
+environment:
+  DEFAULT_ADMIN_PASSWORD: "your_secure_password"  # Must match API service
+```
+
+#### Example: Production docker-compose.yaml
+
+```yaml
+services:
+  api:
+    image: peermetrics/api:latest
+    environment:
+      DEFAULT_ADMIN_USERNAME: "superadmin"
+      DEFAULT_ADMIN_PASSWORD: "MySecureP@ssw0rd123!"
+      DEFAULT_ADMIN_EMAIL: "admin@mycompany.com"
+      # ... other environment variables
+
+  web:
+    image: peermetrics/web:latest
+    environment:
+      DEFAULT_ADMIN_PASSWORD: "MySecureP@ssw0rd123!"  # Must match!
+      # ... other environment variables
+```
+
+**Important Notes**:
+- The `DEFAULT_ADMIN_PASSWORD` must be the same in both web and API services for the default password detection to work correctly
+- The admin user is created only once during the first startup (idempotent operation)
+- If the admin user already exists, the initialization script will skip creation
+- Change these values before your first deployment to production
+
+### Rate Limiting
+
+To protect against brute force attacks, the login endpoint includes rate limiting:
+
+- **Limit**: 5 login attempts per 5 minutes per IP address
+- **Behavior**: After exceeding the limit, users will see an error message: "Too many login attempts. Please try again in a few minutes."
+- **Scope**: Rate limiting applies per IP address, so multiple users behind the same NAT won't interfere with each other excessively
+
+The rate limiting is implemented using `django-ratelimit`.
+
+### Security Best Practices
+
+1. **Change Default Credentials Immediately**: Always change the default admin password after first login, especially in production environments.
+
+2. **Use Strong Passwords**: Choose passwords that are:
+   - At least 12 characters long
+   - Include a mix of uppercase, lowercase, numbers, and special characters
+   - Not based on dictionary words or personal information
+
+3. **Set Custom Credentials via Environment Variables**: For production deployments, always set custom admin credentials using environment variables before the first startup.
+
+4. **Use HTTPS**: Always deploy the web service behind HTTPS to protect credentials in transit.
+
+5. **Limit Network Access**: Restrict access to the Peermetrics web interface using:
+   - Firewall rules
+   - VPN requirements
+   - IP whitelisting
+   - Authentication proxies (e.g., OAuth2 Proxy, Authelia)
+
+6. **Regular Password Rotation**: Periodically update admin passwords using the password change feature.
+
+7. **Monitor Login Attempts**: Keep an eye on failed login attempts in your application logs.
+
+8. **Backup Recovery**: If you lose admin access:
+   ```sh
+   # Access the API container
+   docker compose exec api sh
+
+   # Create a new superuser or reset password
+   python manage.py createsuperuser
+   # or
+   python manage.py changepassword admin
+   ```
 
 ## Other
 
