@@ -18,8 +18,6 @@ services:
   api:
     image: peermetrics/api:latest
 
-    # command removed - using entrypoint.sh now which runs migrations, creates admin user, and starts gunicorn
-
     volumes:
       - api_static:/app/static
 
