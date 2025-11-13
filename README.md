@@ -32,7 +32,6 @@ Table of Contents
      * [Changing Default Password](#changing-default-password)
      * [Customizing Admin Credentials](#customizing-admin-credentials)
      * [Rate Limiting](#rate-limiting)
-     * [Security Best Practices](#security-best-practices)
 * [Other](#other)
      * [DB Migrations](#db-migrations)
      * [API Admin](#api-admin)
@@ -52,7 +51,7 @@ This repo contains the services that are used to ingest and visualize those metr
 ## Features
 
 ### App dashboard
-The app dashboard is the best way to get an overview of how the your users are experiencing your app. On top of the usual metrics (browsers, OS, location, etc) you can see the most common issues overall so you know on what to focus.
+The app dashboard is the best way to get an overview of how your users are experiencing your app. On top of the usual metrics (browsers, OS, location, etc) you can see the most common issues overall so you know on what to focus.
 
 ![image](https://github.com/peermetrics/peermetrics/assets/1862405/b9a541d9-6793-4e55-b604-c717ccab8edd)
 
@@ -195,7 +194,7 @@ Start the watcher for the vue files:
 ```sh
 cd web
 npm install
-npm start watch
+npm run watch
 ```
 
 ## How to integrate
@@ -227,7 +226,7 @@ let peerMetrics = new PeerMetrics({
 
 ## Authentication
 
-Peermetrics includes a Grafana-style authentication system that helps ensure secure access to your monitoring dashboards while maintaining ease of use during initial setup.
+Peermetrics includes an authentication system that helps ensure secure access to your monitoring dashboards while maintaining ease of use during initial setup.
 
 ### Default Credentials
 
@@ -239,8 +238,6 @@ When you first start Peermetrics, a default admin account is automatically creat
 You can log in to the web interface at `http://localhost:8080/login` using these credentials.
 
 ### Changing Default Password
-
-For security, Peermetrics uses a Grafana-inspired approach to handle default passwords:
 
 1. **Automatic Detection**: When you log in with the default password (`admin`), you'll be automatically redirected to a password change page with a security warning.
 
@@ -257,6 +254,17 @@ To change your password:
 - Click "Change Password"
 
 Alternatively, navigate to `/change-password` anytime while logged in.
+
+5. **Backup Recovery**: If you lose admin access:
+   ```sh
+   # Access the API container
+   docker compose exec api sh
+
+   # Create a new superuser or reset password
+   python manage.py createsuperuser
+   # or
+   python manage.py changepassword admin
+   ```
 
 ### Customizing Admin Credentials
 
@@ -315,40 +323,6 @@ To protect against brute force attacks, the login endpoint includes rate limitin
 
 The rate limiting is implemented using `django-ratelimit`.
 
-### Security Best Practices
-
-1. **Change Default Credentials Immediately**: Always change the default admin password after first login, especially in production environments.
-
-2. **Use Strong Passwords**: Choose passwords that are:
-   - At least 12 characters long
-   - Include a mix of uppercase, lowercase, numbers, and special characters
-   - Not based on dictionary words or personal information
-
-3. **Set Custom Credentials via Environment Variables**: For production deployments, always set custom admin credentials using environment variables before the first startup.
-
-4. **Use HTTPS**: Always deploy the web service behind HTTPS to protect credentials in transit.
-
-5. **Limit Network Access**: Restrict access to the Peermetrics web interface using:
-   - Firewall rules
-   - VPN requirements
-   - IP whitelisting
-   - Authentication proxies (e.g., OAuth2 Proxy, Authelia)
-
-6. **Regular Password Rotation**: Periodically update admin passwords using the password change feature.
-
-7. **Monitor Login Attempts**: Keep an eye on failed login attempts in your application logs.
-
-8. **Backup Recovery**: If you lose admin access:
-   ```sh
-   # Access the API container
-   docker compose exec api sh
-
-   # Create a new superuser or reset password
-   python manage.py createsuperuser
-   # or
-   python manage.py changepassword admin
-   ```
-
 ## Other
 
 ### DB Migrations
@@ -358,7 +332,6 @@ To run migration for the DB you need to use the `api` container:
 ```sh
 docker compose run api python manage.py migrate
 ```
-
 
 
 ### API Admin
