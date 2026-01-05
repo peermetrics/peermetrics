@@ -95,11 +95,29 @@ Both **api** and **web** have the same backend:
 Fastest way to get started is to pull this repo and use docker compose
 
 ```sh
-git pull https://github.com/peermetrics/peermetrics
+git clone https://github.com/peermetrics/peermetrics
 cd peermetrics
 ```
 
-### 2. Start docker
+### 2. Run migrations
+
+Before running the containers for the first time we need to run the Django migrations. This is a one time step.
+
+```sh
+docker compose run api sh
+```
+
+And inside the container, run:
+
+```sh
+python manage.py makemigrations app
+python manage.py migrate
+exit
+```
+
+**Note:** The `exit` command will take you back to your terminal after running the migrations.
+
+### 3. Start docker
 
 Now you can simply start all the containers:
 
@@ -107,12 +125,28 @@ Now you can simply start all the containers:
 docker compose up
 ```
 
+The application will be available at:
+- **Web interface**: http://localhost:8080
+- **API endpoint**: http://localhost:8081
+
 The API service will automatically:
-- Run database migrations
+- Run database migrations (if not already done)
 - Create the default admin user (username: `admin`, password: `admin`)
 - Start the application
 
 **Note**: For production deployments, make sure to change the default admin password via environment variables (see [Authentication](#authentication) section).
+
+### 4. Create a user (optional)
+
+To access the admin panel or create organizations, you'll need to create a superuser. In a new terminal:
+
+```sh
+docker compose run api sh
+python manage.py createsuperuser --username admin --email admin@admin.com
+# You'll be prompted to choose a password
+python manage.py collectstatic --clear --noinput
+exit
+```
 
 
 
@@ -152,7 +186,7 @@ Check the files for [web](https://github.com/peermetrics/web) and [api](https://
 
 To start developing peer metrics locally:
 
-1. #### Clone repos
+### 1. Clone repos
 
 Clone this repo:
 
@@ -160,23 +194,52 @@ Clone this repo:
 git clone https://github.com/peermetrics/peermetrics && cd peermetrics
 ```
 
-Then clone  `api` and `web`:
+Then clone `api` and `web` **inside** the `peermetrics` directory:
 
 ```sh
 git clone https://github.com/peermetrics/web
-```
-
-```sh
 git clone https://github.com/peermetrics/api
 ```
 
-2. #### Start docker
+**Important:** The `web` and `api` repos must be cloned inside the `peermetrics` directory, not at the same level. Your directory structure should look like:
 
-To start development start Docker using the special dev file:
+```
+peermetrics/
+  ├── web/
+  ├── api/
+  ├── nginx/
+  └── docker-compose.dev.yaml
+```
+
+### 2. Run migrations
+
+Before running the containers for the first time we need to run the Django migrations. This is a one time step.
+
+```sh
+docker compose -f docker-compose.dev.yaml run api sh
+```
+
+And inside the container, run:
+
+```sh
+python manage.py makemigrations app
+python manage.py migrate
+exit
+```
+
+**Note:** The `exit` command will take you back to your terminal after running the migrations.
+
+### 3. Start docker
+
+To start development, start Docker using the special dev file. **Keep this terminal running:**
 
 ```sh
 docker compose -f docker-compose.dev.yaml up
 ```
+
+The application will be available at:
+- **Web interface**: http://localhost:8080
+- **API endpoint**: http://localhost:8081
 
 The API service will automatically run migrations and create the default admin user on first startup.
 
@@ -187,14 +250,28 @@ docker compose -f docker-compose.dev.yaml exec api python manage.py makemigratio
 docker compose -f docker-compose.dev.yaml exec api python manage.py migrate
 ```
 
-3. #### Start watcher
+### 4. Start watcher (in a separate terminal)
 
-Start the watcher for the vue files:
+Open a **new terminal** and start the watcher for the Vue files. This will automatically rebuild when you make changes:
 
 ```sh
 cd web
 npm install
 npm run watch
+```
+
+**Note:** You need to run both Docker (`docker compose -f docker-compose.dev.yaml up`) and the watcher (`npm run watch`) in separate terminals for development to work properly.
+
+### 5. Create a user (optional)
+
+To access the admin panel or create organizations, you'll need to create a superuser. In a new terminal:
+
+```sh
+docker compose -f docker-compose.dev.yaml run api sh
+python manage.py createsuperuser --username admin --email admin@admin.com
+# You'll be prompted to choose a password
+python manage.py collectstatic --clear --noinput
+exit
 ```
 
 ## How to integrate
@@ -346,13 +423,11 @@ docker compose run api sh
 # run the createsuperuser command
 python manage.py createsuperuser --username admin --email admin@admin.com
 # it will ask for you to choose a password
-```
-
-You'll also need to collectstatic:
-
-```sh
 python manage.py collectstatic --clear --noinput
+exit
 ```
+
+**Note:** After creating the superuser, you can access the admin panel at `http://localhost:8080/admin` (or `http://localhost:8081/admin` for the API admin).
 
 ### Dummy data
 
