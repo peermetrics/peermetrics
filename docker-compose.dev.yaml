@@ -44,6 +44,9 @@ services:
       DJANGO_SETTINGS_MODULE: "web.settings"
       SECRET_KEY: "secret"
 
+      # Default admin password (used to detect default password on login)
+      DEFAULT_ADMIN_PASSWORD: "admin"
+
       # where the API enpoint is located
       API_ROOT: "http://localhost:8081/v1"
 
@@ -82,6 +85,11 @@ services:
 
       DJANGO_SETTINGS_MODULE: "api.settings"
       SECRET_KEY: "secret"
+
+      # Default admin credentials (for development)
+      DEFAULT_ADMIN_USERNAME: "admin"
+      DEFAULT_ADMIN_PASSWORD: "admin"
+      DEFAULT_ADMIN_EMAIL: "admin@admin.com"
 
       # used to generate the JWT token
       INIT_TOKEN_SECRET: "supersecret"

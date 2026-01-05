@@ -32,6 +32,10 @@ services:
       DJANGO_SETTINGS_MODULE: "web.settings"
       SECRET_KEY: "secret"
 
+      # Default admin password (used to detect default password on login)
+      # CHANGE THIS IN PRODUCTION!
+      DEFAULT_ADMIN_PASSWORD: "admin"
+
       # where the API enpoint is located
       API_ROOT: "http://localhost:8081/v1"
 
