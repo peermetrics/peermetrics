@@ -1,0 +1,61 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: peermetrics
+
+resources:
+  - ../../base
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+images:
+  - name: peermetrics/api
+    newTag: latest
+  - name: peermetrics/web
+    newTag: latest
+  - name: ghcr.io/your-org/peermetrics-postgres
+    # Replace with your registry. If Peermetrics publishes an official image, use that instead.
+    newName: your-registry.example.com/peermetrics-postgres
+    newTag: 12.8-pgtrgm
+
+configMapGenerator:
+  - name: peermetrics-api-config
+    behavior: replace
+    literals:
+      - DEBUG=False
+      - DJANGO_SETTINGS_MODULE=api.settings
+      - WEB_DOMAIN=example.com
+      - POST_CONFERENCE_CLEANUP=True
+      - CONN_MAX_AGE=14400
+      - DATABASE_HOST=postgres
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=peerdb
+      - REDIS_HOST=redis://redis:6379
+      - DEFAULT_ADMIN_USERNAME=admin
+      - DEFAULT_ADMIN_EMAIL=admin@admin.com
+  - name: peermetrics-web-config
+    behavior: replace
+    literals:
+      - DEBUG=False
+      - DJANGO_SETTINGS_MODULE=web.settings
+      - API_ROOT=https://example.com/api/v1
+      - CONN_MAX_AGE=14400
+      - DATABASE_HOST=postgres
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=peerdb
+
+secretGenerator:
+  - name: peermetrics-secrets
+    behavior: replace
+    envs:
+      - secrets.env
+
+patches:
+  - target:
+      kind: Ingress
+      name: peermetrics-ingress
+    patch: |-
+      - op: replace
+        path: /spec/rules/0/host
+        value: example.com

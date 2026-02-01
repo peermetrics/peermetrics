@@ -8,3 +8,5 @@ __pycache__
 api/
 
 web/
+
+k8s/overlays/**/secrets.env
