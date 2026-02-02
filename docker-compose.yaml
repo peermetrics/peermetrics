@@ -42,6 +42,9 @@ services:
       # where the API enpoint is located
       API_ROOT: "http://localhost:8081/v1"
 
+      # URL prefix when serving under a subpath (e.g. "/peermetrics"); nginx must have matching locations
+      URL_PREFIX: ""
+
       # DB config
       DATABASE_HOST: "postgres"
       DATABASE_PORT: "5432"
@@ -86,6 +89,9 @@ services:
       SESSION_TOKEN_SECRET: "secret"
 
       WEB_DOMAIN: "localhost:8080"
+
+      # URL prefix when serving under a subpath (e.g. "/peermetrics"); nginx must have matching locations
+      URL_PREFIX: ""
 
       # 
       # Redis config

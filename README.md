@@ -95,16 +95,32 @@ Both **api** and **web** have the same backend:
 Fastest way to get started is to pull this repo and use docker compose
 
 ```sh
-git pull https://github.com/peermetrics/peermetrics
+git clone https://github.com/peermetrics/peermetrics
 cd peermetrics
 ```
 
 ### 2. Start docker
 
-Now you can simply start all the containers:
+**Option A: Using Docker Hub images (may have migration issues)**
+
+You can start all containers using the pre-built images:
 
 ```sh
 docker compose up
+```
+
+**Option B: Using development setup (Recommended)**
+
+For a more reliable setup that builds from source and includes all migrations:
+
+```sh
+# First, clone the api and web repos in the same parent directory
+git clone https://github.com/peermetrics/api
+git clone https://github.com/peermetrics/web
+cd peermetrics
+
+# Then use the dev docker-compose file
+docker compose -f docker-compose.dev.yaml up
 ```
 
 The API service will automatically:
@@ -113,6 +129,10 @@ The API service will automatically:
 - Start the application
 
 **Note**: For production deployments, make sure to change the default admin password via environment variables (see [Authentication](#authentication) section).
+
+**Troubleshooting**: If you encounter migration errors about the "users" table not existing when using `docker compose up`, this indicates that the Docker Hub images (`peermetrics/api:latest` and `peermetrics/web:latest`) are missing the `app/migrations/` directory entirely. Django won't know about the `app` app's migrations, so the `users` table never gets created. 
+
+**Solution**: Use Option B above (`docker-compose.dev.yaml`) which builds from source and includes all migrations. This is the recommended approach for local development.
 
 
 
