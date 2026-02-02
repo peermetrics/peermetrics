@@ -130,10 +130,6 @@ The API service will automatically:
 
 **Note**: For production deployments, make sure to change the default admin password via environment variables (see [Authentication](#authentication) section).
 
-**Troubleshooting**: If you encounter migration errors about the "users" table not existing when using `docker compose up`, this indicates that the Docker Hub images (`peermetrics/api:latest` and `peermetrics/web:latest`) are missing the `app/migrations/` directory entirely. Django won't know about the `app` app's migrations, so the `users` table never gets created. 
-
-**Solution**: Use Option B above (`docker-compose.dev.yaml`) which builds from source and includes all migrations. This is the recommended approach for local development.
-
 
 
 ## How to Deploy
