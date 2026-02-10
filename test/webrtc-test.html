@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PeerMetrics WebRTC Test Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .config-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .config-section h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group small {
+            display: block;
+            margin-top: 5px;
+            color: #666;
+            font-size: 12px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: #5a6268;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background: #c82333;
+        }
+
+        .status-section {
+            margin-top: 20px;
+        }
+
+        .status-box {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .status-box h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-indicator.active {
+            background: #28a745;
+            box-shadow: 0 0 8px rgba(40, 167, 69, 0.5);
+        }
+
+        .status-indicator.inactive {
+            background: #dc3545;
+        }
+
+        .status-indicator.connecting {
+            background: #ffc107;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .log-section {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+        }
+
+        .log-entry.success {
+            color: #4ec9b0;
+        }
+
+        .log-entry.error {
+            color: #f48771;
+        }
+
+        .log-entry.info {
+            color: #569cd6;
+        }
+
+        .log-entry.warn {
+            color: #dcdcaa;
+        }
+
+        .video-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .video-box {
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .video-box video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .video-label {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎥 PeerMetrics WebRTC Test Tool</h1>
+            <p>Test your PeerMetrics setup with a simple WebRTC call</p>
+        </div>
+
+        <div class="content">
+            <div class="config-section">
+                <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 12px; margin-bottom: 15px; border-radius: 4px;">
+                    <strong>⚠️ Permissions Note:</strong> This tool requires camera and/or microphone access. 
+                    If you see permission errors, click the lock icon in your browser's address bar and allow media access, 
+                    or check your browser settings. The tool will work with video-only, audio-only, or even without media (using data channels).
+                </div>
+                <h2>Configuration</h2>
+                <div class="form-group">
+                    <label for="apiRoot">API Root URL</label>
+                    <input type="text" id="apiRoot" value="http://localhost:8081/v1" placeholder="http://localhost:8081/v1">
+                    <small>Your PeerMetrics API endpoint (must end with /v1)</small>
+                </div>
+                <div class="form-group">
+                    <label for="apiKey">API Key *</label>
+                    <input type="text" id="apiKey" placeholder="Enter your API key from the web dashboard">
+                    <small>Get this from your app dashboard after creating an app</small>
+                </div>
+                <div class="form-group">
+                    <label for="userId">User ID</label>
+                    <input type="text" id="userId" value="test-user-1" placeholder="test-user-1">
+                </div>
+                <div class="form-group">
+                    <label for="userName">User Name</label>
+                    <input type="text" id="userName" value="Test User" placeholder="Test User">
+                </div>
+                <div class="form-group">
+                    <label for="conferenceId">Conference ID</label>
+                    <input type="text" id="conferenceId" value="test-conference-1" placeholder="test-conference-1">
+                </div>
+                <div class="form-group">
+                    <label for="conferenceName">Conference Name</label>
+                    <input type="text" id="conferenceName" value="Test Call" placeholder="Test Call">
+                </div>
+                <div class="form-group">
+                    <label for="appVersion">App Version</label>
+                    <input type="text" id="appVersion" value="1.0.0" placeholder="1.0.0">
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button id="startBtn" class="btn-primary">Start Test Call</button>
+                <button id="stopBtn" class="btn-danger" disabled>Stop Call</button>
+            </div>
+
+            <div class="status-section">
+                <div class="status-box">
+                    <h3>
+                        <span class="status-indicator inactive" id="statusIndicator"></span>
+                        <span id="statusText">Ready to start</span>
+                    </h3>
+                </div>
+
+                <div class="video-container hidden" id="videoContainer">
+                    <div class="video-box">
+                        <video id="localVideo" autoplay muted playsinline></video>
+                        <div class="video-label">Local Video</div>
+                    </div>
+                    <div class="video-box">
+                        <video id="remoteVideo" autoplay playsinline></video>
+                        <div class="video-label">Remote Video</div>
+                    </div>
+                </div>
+
+                <div class="status-box">
+                    <h3>Logs</h3>
+                    <div class="log-section" id="logContainer"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PeerMetrics SDK -->
+    <script src="https://cdn.peermetrics.io/js/sdk/peermetrics.min.js"></script>
+
+    <script>
+        let peerMetrics = null;
+        let localPeerConnection = null;
+        let remotePeerConnection = null;
+        let localStream = null;
+        let isCallActive = false;
+
+        const elements = {
+            apiRoot: document.getElementById('apiRoot'),
+            apiKey: document.getElementById('apiKey'),
+            userId: document.getElementById('userId'),
+            userName: document.getElementById('userName'),
+            conferenceId: document.getElementById('conferenceId'),
+            conferenceName: document.getElementById('conferenceName'),
+            appVersion: document.getElementById('appVersion'),
+            startBtn: document.getElementById('startBtn'),
+            stopBtn: document.getElementById('stopBtn'),
+            statusIndicator: document.getElementById('statusIndicator'),
+            statusText: document.getElementById('statusText'),
+            logContainer: document.getElementById('logContainer'),
+            videoContainer: document.getElementById('videoContainer'),
+            localVideo: document.getElementById('localVideo'),
+            remoteVideo: document.getElementById('remoteVideo')
+        };
+
+        function getMediaErrorMessage(error) {
+            const errorMessages = {
+                'NotAllowedError': 'Permission denied. Please allow camera/microphone access in your browser settings.',
+                'NotFoundError': 'No camera/microphone found. Please connect a device and try again.',
+                'NotReadableError': 'Camera/microphone is being used by another application. Please close other apps and try again.',
+                'OverconstrainedError': 'Requested constraints cannot be satisfied. Your device may not support the requested settings.',
+                'SecurityError': 'Security error. Make sure you are using HTTPS or localhost.',
+                'TypeError': 'Invalid constraints provided.',
+                'AbortError': 'Request was aborted.',
+                'NotSupportedError': 'WebRTC is not supported in this browser.'
+            };
+            
+            const errorName = error.name || 'UnknownError';
+            const baseMessage = errorMessages[errorName] || error.message || 'Unknown error occurred';
+            return `${errorName}: ${baseMessage}`;
+        }
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            logEntry.textContent = `[${timestamp}] ${message}`;
+            elements.logContainer.appendChild(logEntry);
+            elements.logContainer.scrollTop = elements.logContainer.scrollHeight;
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+
+        function updateStatus(text, status) {
+            elements.statusText.textContent = text;
+            elements.statusIndicator.className = `status-indicator ${status}`;
+        }
+
+        function updateButtons(startDisabled, stopDisabled) {
+            elements.startBtn.disabled = startDisabled;
+            elements.stopBtn.disabled = stopDisabled;
+        }
+
+        async function initializePeerMetrics() {
+            const apiKey = elements.apiKey.value.trim();
+            if (!apiKey) {
+                log('API Key is required!', 'error');
+                return false;
+            }
+
+            const apiRoot = elements.apiRoot.value.trim();
+            if (!apiRoot || !apiRoot.endsWith('/v1')) {
+                log('API Root must end with /v1', 'error');
+                return false;
+            }
+
+            try {
+                log('Initializing PeerMetrics...', 'info');
+                
+                peerMetrics = new PeerMetrics({
+                    apiRoot: apiRoot,
+                    apiKey: apiKey,
+                    userId: elements.userId.value || 'test-user-1',
+                    userName: elements.userName.value || 'Test User',
+                    conferenceId: elements.conferenceId.value || 'test-conference-1',
+                    conferenceName: elements.conferenceName.value || 'Test Call',
+                    appVersion: elements.appVersion.value || '1.0.0'
+                });
+
+                await peerMetrics.initialize();
+                log('PeerMetrics initialized successfully!', 'success');
+                return true;
+            } catch (error) {
+                log(`Failed to initialize PeerMetrics: ${error.message}`, 'error');
+                return false;
+            }
+        }
+
+        async function createPeerConnections() {
+            // Create two peer connections for testing
+            const configuration = {
+                iceServers: [
+                    { urls: 'stun:stun.l.google.com:19302' }
+                ]
+            };
+
+            localPeerConnection = new RTCPeerConnection(configuration);
+            remotePeerConnection = new RTCPeerConnection(configuration);
+
+            // Add local stream tracks to local peer connection
+            if (localStream) {
+                localStream.getTracks().forEach(track => {
+                    localPeerConnection.addTrack(track, localStream);
+                });
+            } else {
+                // If no media, create a data channel for testing
+                log('Creating data channel for connection test...', 'info');
+                const dataChannel = localPeerConnection.createDataChannel('test');
+                dataChannel.onopen = () => {
+                    log('Data channel opened', 'success');
+                    dataChannel.send('Hello from test tool!');
+                };
+                dataChannel.onmessage = (event) => {
+                    log(`Data channel message: ${event.data}`, 'info');
+                };
+                dataChannel.onerror = (error) => {
+                    log(`Data channel error: ${error.message}`, 'error');
+                };
+
+                // Handle incoming data channel on remote peer
+                remotePeerConnection.ondatachannel = (event) => {
+                    const channel = event.channel;
+                    log('Received data channel', 'success');
+                    channel.onopen = () => {
+                        log('Remote data channel opened', 'success');
+                        channel.send('Hello back!');
+                    };
+                    channel.onmessage = (event) => {
+                        log(`Remote data channel message: ${event.data}`, 'info');
+                    };
+                };
+            }
+
+            // Handle ICE candidates
+            localPeerConnection.onicecandidate = (event) => {
+                if (event.candidate) {
+                    remotePeerConnection.addIceCandidate(event.candidate).catch(err => {
+                        log(`Error adding ICE candidate: ${err.message}`, 'error');
+                    });
+                }
+            };
+
+            remotePeerConnection.onicecandidate = (event) => {
+                if (event.candidate) {
+                    localPeerConnection.addIceCandidate(event.candidate).catch(err => {
+                        log(`Error adding ICE candidate: ${err.message}`, 'error');
+                    });
+                }
+            };
+
+            // Handle remote stream
+            remotePeerConnection.ontrack = (event) => {
+                log('Received remote stream', 'success');
+                elements.remoteVideo.srcObject = event.streams[0];
+            };
+
+            // Add PeerMetrics monitoring to local peer connection
+            if (peerMetrics) {
+                try {
+                    peerMetrics.addConnection({
+                        pc: localPeerConnection,
+                        peerId: 'peer-1'
+                    });
+                    log('Added local peer connection to PeerMetrics', 'success');
+                } catch (error) {
+                    log(`Error adding connection to PeerMetrics: ${error.message}`, 'error');
+                }
+            }
+
+            log('Peer connections created', 'success');
+        }
+
+        async function startCall() {
+            if (isCallActive) {
+                log('Call already active', 'warn');
+                return;
+            }
+
+            updateStatus('Initializing...', 'connecting');
+            updateButtons(true, true);
+            log('Starting test call...', 'info');
+
+            try {
+                // Initialize PeerMetrics
+                const metricsInitialized = await initializePeerMetrics();
+                if (!metricsInitialized) {
+                    updateStatus('Failed to initialize', 'inactive');
+                    updateButtons(false, true);
+                    return;
+                }
+
+                // Get user media with fallback options
+                log('Requesting user media (video + audio)...', 'info');
+                try {
+                    localStream = await navigator.mediaDevices.getUserMedia({
+                        video: true,
+                        audio: true
+                    });
+                    log('Got user media (video + audio)', 'success');
+                } catch (audioError) {
+                    log(`Audio failed: ${getMediaErrorMessage(audioError)}. Trying video-only...`, 'warn');
+                    try {
+                        // Fallback to video-only
+                        localStream = await navigator.mediaDevices.getUserMedia({
+                            video: true,
+                            audio: false
+                        });
+                        log('Got user media (video-only). Audio unavailable.', 'warn');
+                    } catch (videoError) {
+                        log(`Video also failed: ${getMediaErrorMessage(videoError)}. Trying audio-only...`, 'warn');
+                        try {
+                            // Fallback to audio-only
+                            localStream = await navigator.mediaDevices.getUserMedia({
+                                video: false,
+                                audio: true
+                            });
+                            log('Got user media (audio-only). Video unavailable.', 'warn');
+                        } catch (bothError) {
+                            // Last resort: create a dummy stream with no tracks for testing
+                            log('Both video and audio failed. Creating test connection without media...', 'warn');
+                            log(`Error details - Audio: ${getMediaErrorMessage(audioError)}, Video: ${getMediaErrorMessage(videoError)}`, 'error');
+                            log('Note: PeerMetrics can still collect connection metrics without media tracks', 'info');
+                            localStream = null;
+                            // We'll still create the peer connection but without media tracks
+                        }
+                    }
+                }
+
+                if (localStream) {
+                    elements.localVideo.srcObject = localStream;
+                    elements.videoContainer.classList.remove('hidden');
+                } else {
+                    log('Proceeding with connection test without media tracks', 'info');
+                    // Hide video container if no media
+                    elements.videoContainer.classList.add('hidden');
+                }
+
+                // Create peer connections
+                await createPeerConnections();
+
+                // Create offer
+                log('Creating offer...', 'info');
+                const offer = await localPeerConnection.createOffer();
+                await localPeerConnection.setLocalDescription(offer);
+                log('Offer created', 'success');
+
+                // Set remote description and create answer
+                await remotePeerConnection.setRemoteDescription(offer);
+                log('Set remote description', 'success');
+
+                const answer = await remotePeerConnection.createAnswer();
+                await remotePeerConnection.setLocalDescription(answer);
+                log('Answer created', 'success');
+
+                // Set local remote description
+                await localPeerConnection.setRemoteDescription(answer);
+                log('Call established!', 'success');
+
+                isCallActive = true;
+                updateStatus('Call Active - Metrics being collected', 'active');
+                updateButtons(true, false);
+
+                // Log connection state changes
+                localPeerConnection.onconnectionstatechange = () => {
+                    log(`Local connection state: ${localPeerConnection.connectionState}`, 'info');
+                };
+
+                remotePeerConnection.onconnectionstatechange = () => {
+                    log(`Remote connection state: ${remotePeerConnection.connectionState}`, 'info');
+                };
+
+            } catch (error) {
+                log(`Error starting call: ${error.message}`, 'error');
+                updateStatus('Error starting call', 'inactive');
+                updateButtons(false, true);
+                await stopCall();
+            }
+        }
+
+        async function stopCall() {
+            if (!isCallActive && !localPeerConnection) {
+                return;
+            }
+
+            log('Stopping call...', 'info');
+            updateStatus('Stopping...', 'connecting');
+            updateButtons(true, true);
+
+            try {
+                // Stop all tracks
+                if (localStream) {
+                    localStream.getTracks().forEach(track => track.stop());
+                    localStream = null;
+                }
+
+                // Close peer connections
+                if (localPeerConnection) {
+                    localPeerConnection.close();
+                    localPeerConnection = null;
+                }
+
+                if (remotePeerConnection) {
+                    remotePeerConnection.close();
+                    remotePeerConnection = null;
+                }
+
+                // Clear video elements
+                elements.localVideo.srcObject = null;
+                elements.remoteVideo.srcObject = null;
+                elements.videoContainer.classList.add('hidden');
+
+                // End conference in PeerMetrics
+                if (peerMetrics) {
+                    try {
+                        await peerMetrics.endConference();
+                        log('Conference ended in PeerMetrics', 'success');
+                    } catch (error) {
+                        log(`Error ending conference: ${error.message}`, 'error');
+                    }
+                    peerMetrics = null;
+                }
+
+                isCallActive = false;
+                updateStatus('Call stopped - Ready to start', 'inactive');
+                updateButtons(false, true);
+                log('Call stopped successfully', 'success');
+
+            } catch (error) {
+                log(`Error stopping call: ${error.message}`, 'error');
+                updateStatus('Error stopping call', 'inactive');
+                updateButtons(false, true);
+            }
+        }
+
+        // Event listeners
+        elements.startBtn.addEventListener('click', startCall);
+        elements.stopBtn.addEventListener('click', stopCall);
+
+        // Check for media device support
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            log('WebRTC is not supported in this browser', 'error');
+            updateStatus('WebRTC not supported', 'inactive');
+            updateButtons(true, true);
+        } else {
+            log('WebRTC test tool ready. Configure settings and click "Start Test Call"', 'info');
+        }
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (isCallActive) {
+                stopCall();
+            }
+        });
+    </script>
+</body>
+</html>
+

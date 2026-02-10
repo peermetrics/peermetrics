@@ -1,9 +1,7 @@
 services:
   nginx:
     build: ./nginx
-
     image: peermetrics/nginx:dev
-
     ports:
       - 8080:8080
       - 8081:8081
@@ -13,135 +11,73 @@ services:
       - ./web/static:/app/web
       - ./api/static:/app/api
       - ./web/node_modules:/app/node_modules
-
+      - ./test:/app/test:ro
     depends_on:
       - api
       - web
-
     restart: "on-failure"
 
   web:
     build:
       context: ./web
       dockerfile: Dockerfile.dev
-
     image: peermetrics/web:dev
-
-    command: "gunicorn web.wsgi:application --bind 0.0.0.0:8080 --log-level debug --reload"
-
+    command: sh -c "npm install --no-audit --no-fund && npm run css && npm run build-dev && exec gunicorn web.wsgi:application --bind 0.0.0.0:8080 --log-level debug --reload"
     working_dir: /app
     volumes:
       - ./web:/app
-
     expose:
       - 8080
-
     environment:
       DEBUG: "True"
-
       APP_PORT: "8080"
-
       DJANGO_SETTINGS_MODULE: "web.settings"
       SECRET_KEY: "secret"
-
-      # Default admin password (used to detect default password on login)
       DEFAULT_ADMIN_PASSWORD: "admin"
-
-      # where the API enpoint is located
       API_ROOT: "http://localhost:8081/v1"
-
-      # DB config
+      URL_PREFIX: ""  # e.g. "/peermetrics" for subpath; nginx must have matching locations
       DATABASE_HOST: "postgres"
       DATABASE_PORT: "5432"
       DATABASE_USER: "peeruser"
       DATABASE_PASSWORD: "peeruser"
       DATABASE_NAME: "peerdb"
       CONN_MAX_AGE: "14400"
-
     depends_on:
       - postgres
       - redis
-
     restart: "on-failure"
 
   api:
     build:
       context: ./api
       dockerfile: Dockerfile.dev
-
     image: peermetrics/api:dev
-
-    command: "gunicorn api.wsgi:application --bind 0.0.0.0:8081 --log-level debug --reload"
-
     working_dir: /app
     volumes:
       - ./api:/app
-
     expose:
       - 8081
-
     environment:
       DEBUG: "True"
-
       DJANGO_SETTINGS_MODULE: "api.settings"
       SECRET_KEY: "secret"
-
-      # Default admin credentials (for development)
       DEFAULT_ADMIN_USERNAME: "admin"
       DEFAULT_ADMIN_PASSWORD: "admin"
       DEFAULT_ADMIN_EMAIL: "admin@admin.com"
-
-      # used to generate the JWT token
       INIT_TOKEN_SECRET: "supersecret"
-
-      # used to encrypt the session cookie
       SESSION_TOKEN_SECRET: "secret"
-
       WEB_DOMAIN: "localhost:8080"
-
-      # 
-      # Redis config
-      # 
-      # Location of redis server
       REDIS_HOST: "redis://127.0.0.1:6379"
-
-      # 
-      # DB config
-      # 
       DATABASE_HOST: "postgres"
       DATABASE_PORT: "5432"
       DATABASE_USER: "peeruser"
       DATABASE_PASSWORD: "peeruser"
       DATABASE_NAME: "peerdb"
       CONN_MAX_AGE: "14400"
-
-      # if we should delete all the unneeded stats events after the conference ends
       POST_CONFERENCE_CLEANUP: "False"
-
-      # 
-      # App engine
-      # 
-      # If the app is deployed on app engine
-
-      # 
-      # Google cloud logging
-      # 
-      # Enable logging in Google cloud logging
-      # USE_GOOGLE_CLOUD_LOGGING: "True"
-
-      # 
-      # Google cloud tasks
-      # 
-      # If you want to use google task queue
-      # USE_GOOGLE_TASK_QUEUE: "True"
-      # GOOGLE_TASK_QUEUE_NAME: "queue-1"
-      # APP_ENGINE_LOCATION: "us-east1"
-      # TASK_QUEUE_DOMAIN: 'https://api.example.com/'
-
     depends_on:
       - postgres
       - redis
-
     restart: "on-failure"
 
   postgres:
@@ -159,13 +95,12 @@ services:
     restart: always
 
   redis:
-    container_name: redis
     image: redis
     ports:
       - 6379:6379
     volumes:
       - redis_data:/data
-    entrypoint: redis-server --appendonly yes
+    command: redis-server --appendonly yes
     restart: always
 
 volumes:
