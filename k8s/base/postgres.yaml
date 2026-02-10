@@ -1,0 +1,73 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: peermetrics
+spec:
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: 5432
+  selector:
+    app: peermetrics-postgres
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: peermetrics-postgres
+  namespace: peermetrics
+spec:
+  serviceName: postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app: peermetrics-postgres
+  template:
+    metadata:
+      labels:
+        app: peermetrics-postgres
+    spec:
+      containers:
+        - name: postgres
+          image: ghcr.io/your-org/peermetrics-postgres:12.8-pgtrgm
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5432
+              name: postgres
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: peermetrics-api-config
+                  key: DATABASE_NAME
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: peermetrics-secrets
+                  key: DATABASE_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: peermetrics-secrets
+                  key: DATABASE_PASSWORD
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "1"
+              memory: "1Gi"
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 20Gi
+        storageClassName: gp3
