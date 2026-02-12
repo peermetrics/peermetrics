@@ -4,23 +4,23 @@ set -euo pipefail
 usage() {
   cat <<'USAGE'
 Usage:
-  build_push_image.sh --region <region> --repo <repo> --tag <tag> --context <path> --dockerfile <path> [--account-id <id>] [--profile <aws_profile>]
+  build_push_image.sh --region <region> --repo <repo> --tag <tag> --context <path> --dockerfile <path> [--account-id <id>] [--profile <aws_profile>] [--runtime <docker|podman>] [--platform <platform>]
 
 Example (web):
   AWS_PROFILE=your-profile build_push_image.sh \
     --region us-east-1 \
     --repo peermetrics-web-dev \
     --tag prefix-aware \
-    --context /Users/justinwilliams/AgilityFeat/AgilityFeat/web \
-    --dockerfile /Users/justinwilliams/AgilityFeat/AgilityFeat/web/Dockerfile
+    --context /path/to/web \
+    --dockerfile /path/to/web/Dockerfile
 
 Example (postgres):
   AWS_PROFILE=your-profile build_push_image.sh \
     --region us-east-1 \
     --repo peermetrics-postgres-dev \
     --tag 12.8-pgtrgm \
-    --context /Users/justinwilliams/AgilityFeat/AgilityFeat/peermetrics \
-    --dockerfile /Users/justinwilliams/AgilityFeat/AgilityFeat/peermetrics/Dockerfile.postgres
+    --context /path/to/peermetrics \
+    --dockerfile /path/to/peermetrics/Dockerfile.postgres
 USAGE
 }
 
@@ -31,6 +31,8 @@ TAG=""
 CONTEXT=""
 DOCKERFILE=""
 PROFILE="${AWS_PROFILE:-${AWS_DEFAULT_PROFILE:-}}"
+RUNTIME="docker"
+PLATFORM=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -62,6 +64,14 @@ while [[ $# -gt 0 ]]; do
       PROFILE="$2"
       shift 2
       ;;
+    --runtime)
+      RUNTIME="$2"
+      shift 2
+      ;;
+    --platform)
+      PLATFORM="$2"
+      shift 2
+      ;;
     -h|--help)
       usage
       exit 0
@@ -77,6 +87,16 @@ done
 if [[ -z "$REGION" || -z "$REPO" || -z "$TAG" || -z "$CONTEXT" || -z "$DOCKERFILE" ]]; then
   echo "Missing required arguments." >&2
   usage
+  exit 1
+fi
+
+if [[ "$RUNTIME" != "docker" && "$RUNTIME" != "podman" ]]; then
+  echo "Invalid --runtime: $RUNTIME (expected docker or podman)" >&2
+  exit 1
+fi
+
+if ! command -v "$RUNTIME" >/dev/null 2>&1; then
+  echo "Container runtime not found: $RUNTIME" >&2
   exit 1
 fi
 
@@ -98,12 +118,19 @@ if [[ "$CONFIRM_LOWER" != "y" ]]; then
 fi
 
 IMAGE_URI="${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${REPO}:${TAG}"
+REGISTRY="${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com"
 
 aws ecr get-login-password "${AWS_OPTS[@]}" | \
-  docker login --username AWS --password-stdin "${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com"
+  "$RUNTIME" login --username AWS --password-stdin "$REGISTRY"
 
-docker build -f "$DOCKERFILE" -t "$IMAGE_URI" "$CONTEXT"
+BUILD_ARGS=(-f "$DOCKERFILE" -t "$IMAGE_URI")
+if [[ -n "$PLATFORM" ]]; then
+  BUILD_ARGS+=(--platform "$PLATFORM")
+fi
+BUILD_ARGS+=("$CONTEXT")
 
-docker push "$IMAGE_URI"
+"$RUNTIME" build "${BUILD_ARGS[@]}"
+
+"$RUNTIME" push "$IMAGE_URI"
 
 echo "Pushed: $IMAGE_URI"
