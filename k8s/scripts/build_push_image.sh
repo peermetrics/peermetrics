@@ -11,16 +11,16 @@ Example (web):
     --region us-east-1 \
     --repo peermetrics-web-dev \
     --tag prefix-aware \
-    --context /Users/justinwilliams/AgilityFeat/AgilityFeat/web \
-    --dockerfile /Users/justinwilliams/AgilityFeat/AgilityFeat/web/Dockerfile
+    --context /path/to/web \
+    --dockerfile /path/to/web/Dockerfile
 
 Example (postgres):
   AWS_PROFILE=your-profile build_push_image.sh \
     --region us-east-1 \
     --repo peermetrics-postgres-dev \
     --tag 12.8-pgtrgm \
-    --context /Users/justinwilliams/AgilityFeat/AgilityFeat/peermetrics \
-    --dockerfile /Users/justinwilliams/AgilityFeat/AgilityFeat/peermetrics/Dockerfile.postgres
+    --context /path/to/peermetrics \
+    --dockerfile /path/to/peermetrics/Dockerfile.postgres
 USAGE
 }
 
