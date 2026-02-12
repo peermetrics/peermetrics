@@ -14,7 +14,7 @@ spec:
     - host: peermetrics.example.com
       http:
         paths:
-          - path: /api
+          - path: /v1
             pathType: Prefix
             backend:
               service:
