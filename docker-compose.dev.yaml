@@ -75,6 +75,10 @@ services:
       DATABASE_NAME: "peerdb"
       CONN_MAX_AGE: "14400"
       POST_CONFERENCE_CLEANUP: "False"
+      # GeoIP / Map (optional - enables location map on dashboard)
+      # USE_EXTERNAL_GEOIP_PROVIDER: "True"
+      # IPSTACK_URL: "http://api.ipstack.com"
+      # IPSTACK_ACCESS_KEY: "your-ipstack-access-key"
     depends_on:
       - postgres
       - redis
