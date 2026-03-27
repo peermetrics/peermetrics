@@ -22,6 +22,7 @@ Table of Contents
 * [How to Deploy](#how-to-deploy)
      * [Docker](#docker)
      * [Google app engine](#google-app-engine)
+     * [Environment Variables Reference](#environment-variables-reference)
 * [Development](#development)
      * [Clone repos](#clone-repos)
      * [Start docker](#start-docker)
@@ -160,9 +161,82 @@ To deploy both containers on the same server look at [docker-compose.yaml](docke
 
 You also have the option to deploy the app as a [Google App engine service](https://cloud.google.com/appengine?hl=en).
 
-Each service repo has a `app_engine.yaml` file that will help you deploy both services to App engine. 
+Each service repo has a `app_engine.yaml` file that will help you deploy both services to App engine.
 
 Check the files for [web](https://github.com/peermetrics/web) and [api](https://github.com/peermetrics/api).
+
+### Environment Variables Reference
+
+Both the **api** and **web** services are configured via environment variables. The tables below list every available variable, which service uses it, and whether it is required.
+
+#### API Service
+
+| Variable | Required | Default | Description |
+|---|---|---|---|
+| **Django Core** | | | |
+| `DEBUG` | No | `False` | Enable Django debug mode. Set to `True` for development only. |
+| `DJANGO_SETTINGS_MODULE` | Yes | - | Must be set to `api.settings`. |
+| `SECRET_KEY` | Yes | - | Django secret key for cryptographic signing. Use a long random string in production. |
+| `ALLOWED_HOSTS` | No | `*` | Comma-separated list of allowed hostnames. |
+| `URL_PREFIX` | No | `""` | URL prefix when serving under a subpath (e.g. `/peermetrics`). Nginx must have matching locations. |
+| **Authentication** | | | |
+| `INIT_TOKEN_SECRET` | Yes | - | Secret used to sign JWT tokens returned by the `/initialize` endpoint. Used by the SDK to authenticate. |
+| `SESSION_TOKEN_SECRET` | Yes | - | Secret used to sign JWT tokens returned by the `/sessions` endpoint. |
+| **Admin User** | | | |
+| `DEFAULT_ADMIN_USERNAME` | No | `admin` | Username for the auto-created admin account on first startup. |
+| `DEFAULT_ADMIN_PASSWORD` | No | `admin` | Password for the auto-created admin account. **Change in production.** Must match the web service value. |
+| `DEFAULT_ADMIN_EMAIL` | No | `admin@admin.com` | Email for the auto-created admin account. |
+| **Web Domain** | | | |
+| `WEB_DOMAIN` | Yes | - | Domain where the web dashboard is hosted (e.g. `localhost:8080`). Used for CORS and generating links. Do not include the protocol. |
+| **Database** | | | |
+| `DATABASE_HOST` | Yes | - | PostgreSQL server hostname. |
+| `DATABASE_PORT` | Yes | - | PostgreSQL server port (typically `5432`). |
+| `DATABASE_USER` | Yes | - | PostgreSQL username. |
+| `DATABASE_PASSWORD` | Yes | - | PostgreSQL password. |
+| `DATABASE_NAME` | Yes | - | PostgreSQL database name. |
+| `CONN_MAX_AGE` | Yes | - | Database connection lifetime in seconds (e.g. `600`). Set to `0` to close connections after each request. |
+| **Redis** | | | |
+| `REDIS_HOST` | No | - | Redis connection URL (e.g. `redis://127.0.0.1:6379`). If not set, caching is disabled. For TLS use `rediss://`. |
+| **GeoIP / Map** | | | |
+| `USE_EXTERNAL_GEOIP_PROVIDER` | No | `False` | Set to `True` to enable GeoIP lookups for participant location data. Required for the map on the dashboard to show participant locations. |
+| `IPSTACK_URL` | No | - | Base URL for the ipstack API. Set to `http://api.ipstack.com`. Note: ipstack's free plan only supports HTTP, not HTTPS. Required when `USE_EXTERNAL_GEOIP_PROVIDER` is `True`. |
+| `IPSTACK_ACCESS_KEY` | No | - | Your ipstack API access key. Get one at [ipstack.com/signup](https://ipstack.com/signup). Required when `USE_EXTERNAL_GEOIP_PROVIDER` is `True`. |
+| **Data Management** | | | |
+| `POST_CONFERENCE_CLEANUP` | No | `False` | If `True`, deletes raw stats events after a conference ends to save storage. Conference summaries are kept. See [FAQ](#what-does-the-post_conference_cleanup-flag-do). |
+| **Google Cloud Tasks** | | | |
+| `USE_GOOGLE_TASK_QUEUE` | No | `False` | Set to `True` to use Google Cloud Tasks for background processing (App Engine deployments). |
+| `GOOGLE_TASK_QUEUE_NAME` | No | - | Name of the Cloud Tasks queue (e.g. `queue-1`). Required when `USE_GOOGLE_TASK_QUEUE` is `True`. |
+| `APP_ENGINE_LOCATION` | No | - | App Engine location (e.g. `us-east1`). Required when `USE_GOOGLE_TASK_QUEUE` is `True`. |
+| `TASK_QUEUE_DOMAIN` | No | - | Domain for task queue callbacks (e.g. `https://api.example.com/`). Required when `USE_GOOGLE_TASK_QUEUE` is `True`. |
+| **Google Cloud Logging** | | | |
+| `USE_GOOGLE_CLOUD_LOGGING` | No | `False` | Set to `True` to send logs to Google Cloud Logging. Only applies when deployed on GCP. |
+
+#### Web Service
+
+| Variable | Required | Default | Description |
+|---|---|---|---|
+| `DEBUG` | No | `False` | Enable Django debug mode. Set to `True` for development only. |
+| `DJANGO_SETTINGS_MODULE` | Yes | - | Must be set to `web.settings`. |
+| `SECRET_KEY` | Yes | - | Django secret key. Can be different from the API service key. |
+| `ALLOWED_HOSTS` | No | `*` | Comma-separated list of allowed hostnames. |
+| `URL_PREFIX` | No | `""` | URL prefix when serving under a subpath (e.g. `/peermetrics`). Must match nginx configuration. |
+| `DEFAULT_ADMIN_PASSWORD` | No | `admin` | Used to detect if the user is logging in with the default password and prompt for a change. Must match the API service value. |
+| `API_ROOT` | Yes | - | Full URL to the API endpoint including `/v1` (e.g. `http://localhost:8081/v1`). The web service uses this to fetch data from the API. |
+| `COOKIE_DOMAIN` | No | - | Domain for the session cookie. Only needed when API and web are on different subdomains. |
+| `DATABASE_HOST` | Yes | - | PostgreSQL server hostname (same database as the API service). |
+| `DATABASE_PORT` | Yes | - | PostgreSQL server port. |
+| `DATABASE_USER` | Yes | - | PostgreSQL username. |
+| `DATABASE_PASSWORD` | Yes | - | PostgreSQL password. |
+| `DATABASE_NAME` | Yes | - | PostgreSQL database name. |
+| `CONN_MAX_AGE` | Yes | - | Database connection lifetime in seconds. |
+
+#### Shared Infrastructure
+
+| Variable | Required | Default | Description |
+|---|---|---|---|
+| `POSTGRES_USER` | Yes | - | PostgreSQL superuser username (used by the postgres container). |
+| `POSTGRES_PASSWORD` | Yes | - | PostgreSQL superuser password (used by the postgres container). |
+| `POSTGRES_DB` | Yes | - | PostgreSQL database name to create on startup (used by the postgres container). |
 
 ## Development
 
