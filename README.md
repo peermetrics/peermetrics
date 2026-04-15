@@ -203,6 +203,9 @@ Both the **api** and **web** services are configured via environment variables. 
 | `IPSTACK_ACCESS_KEY` | No | - | Your ipstack API access key. Get one at [ipstack.com/signup](https://ipstack.com/signup). Required when `USE_EXTERNAL_GEOIP_PROVIDER` is `True`. |
 | **Data Management** | | | |
 | `POST_CONFERENCE_CLEANUP` | No | `False` | If `True`, deletes raw stats events after a conference ends to save storage. Conference summaries are kept. See [FAQ](#what-does-the-post_conference_cleanup-flag-do). |
+| `CONFERENCE_TIMEOUT_HOURS` | No | `4` | Close "ongoing" conferences that have had no activity for this many hours. Prevents stuck conferences when clients disconnect without sending cleanup events. |
+| `ENABLE_INLINE_CONFERENCE_CLEANUP` | No | `false` | If `true`, the API runs a background thread that closes stale conferences periodically. Safe with multiple gunicorn workers and multiple API instances — coordinates via a Redis distributed lock so only one worker per cycle runs the cleanup. Requires Redis (`REDIS_HOST`). |
+| `CONFERENCE_CLEANUP_INTERVAL_SECONDS` | No | `3600` | How often the inline cleanup runs in seconds. Only applies when `ENABLE_INLINE_CONFERENCE_CLEANUP` is `true`. |
 | **Google Cloud Tasks** | | | |
 | `USE_GOOGLE_TASK_QUEUE` | No | `False` | Set to `True` to use Google Cloud Tasks for background processing (App Engine deployments). |
 | `GOOGLE_TASK_QUEUE_NAME` | No | - | Name of the Cloud Tasks queue (e.g. `queue-1`). Required when `USE_GOOGLE_TASK_QUEUE` is `True`. |
