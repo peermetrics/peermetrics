@@ -97,7 +97,7 @@ services:
       # Redis config
       # 
       # Location of redis server
-      REDIS_HOST: "redis://127.0.0.1:6379"
+      REDIS_HOST: "redis://redis:6379"
 
       # 
       # DB config
@@ -112,18 +112,9 @@ services:
       # if we should delete all the unneeded stats events after the conference ends
       POST_CONFERENCE_CLEANUP: "True"
 
-      #
-      # GeoIP / Map
-      #
-      # Enable to show participant locations on the dashboard map
-      # Requires an ipstack API key (get one at https://ipstack.com/signup)
-      # USE_EXTERNAL_GEOIP_PROVIDER: "True"
-      # IPSTACK_URL: "http://api.ipstack.com"
-      # IPSTACK_ACCESS_KEY: "your-ipstack-access-key"
-
-      #
+      # 
       # App engine
-      #
+      # 
       # If the app is deployed on app engine
 
       # 

@@ -67,7 +67,7 @@ services:
       INIT_TOKEN_SECRET: "supersecret"
       SESSION_TOKEN_SECRET: "secret"
       WEB_DOMAIN: "localhost:8080"
-      REDIS_HOST: "redis://127.0.0.1:6379"
+      REDIS_HOST: "redis://redis:6379"
       DATABASE_HOST: "postgres"
       DATABASE_PORT: "5432"
       DATABASE_USER: "peeruser"
