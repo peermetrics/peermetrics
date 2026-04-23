@@ -336,7 +336,7 @@
     </div>
 
     <!-- PeerMetrics SDK -->
-    <script src="https://cdn.peermetrics.io/js/sdk/peermetrics.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@peermetrics/sdk@2.8.0/dist/browser.min.js"></script>
 
     <script>
         let peerMetrics = null;
@@ -658,13 +658,13 @@
                 elements.remoteVideo.srcObject = null;
                 elements.videoContainer.classList.add('hidden');
 
-                // End conference in PeerMetrics
+                // Finalize PeerMetrics session
                 if (peerMetrics) {
                     try {
-                        await peerMetrics.endConference();
-                        log('Conference ended in PeerMetrics', 'success');
+                        await peerMetrics.endCall();
+                        log('PeerMetrics call ended', 'success');
                     } catch (error) {
-                        log(`Error ending conference: ${error.message}`, 'error');
+                        log(`Error finalizing PeerMetrics session: ${error.message}`, 'error');
                     }
                     peerMetrics = null;
                 }
