@@ -97,7 +97,7 @@ services:
       # Redis config
       # 
       # Location of redis server
-      REDIS_HOST: "redis://127.0.0.1:6379"
+      REDIS_HOST: "redis://redis:6379"
 
       # 
       # DB config
@@ -163,12 +163,18 @@ services:
 
   redis:
     container_name: redis
-    image: redis
+    # Pinned to 7.4-alpine: mirrors the Redis-7 wire protocol that prod
+    # ElastiCache (Valkey 8.2) exposes, and avoids the `image: redis` floating
+    # tag that recently pulled Redis 8 (incompatible AOF format).
+    image: redis:7.4-alpine
     ports:
       - 6379:6379
     volumes:
       - redis_data:/data
-    entrypoint: redis-server --appendonly yes
+    # Exec form (list) — the previous shell-form `entrypoint` got re-parsed
+    # by the image's entrypoint wrapper into "appendonly yes redis-server",
+    # which Redis read as a malformed config line and refused to start.
+    command: ["redis-server", "--appendonly", "yes"]
     restart: always
 
 volumes:
