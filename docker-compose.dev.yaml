@@ -67,7 +67,7 @@ services:
       INIT_TOKEN_SECRET: "supersecret"
       SESSION_TOKEN_SECRET: "secret"
       WEB_DOMAIN: "localhost:8080"
-      REDIS_HOST: "redis://127.0.0.1:6379"
+      REDIS_HOST: "redis://redis:6379"
       DATABASE_HOST: "postgres"
       DATABASE_PORT: "5432"
       DATABASE_USER: "peeruser"
@@ -99,12 +99,17 @@ services:
     restart: always
 
   redis:
-    image: redis
+    # Pinned to 7.4-alpine: mirrors the Redis-7 wire protocol that prod
+    # ElastiCache (Valkey 8.2) exposes, and avoids the floating `redis`
+    # tag that pulled Redis 8 (incompatible AOF format).
+    image: redis:7.4-alpine
     ports:
       - 6379:6379
     volumes:
       - redis_data:/data
-    command: redis-server --appendonly yes
+    # Exec form (list) so the image's entrypoint wrapper doesn't re-parse
+    # the shell-form string into a malformed config line.
+    command: ["redis-server", "--appendonly", "yes"]
     restart: always
 
 volumes:
