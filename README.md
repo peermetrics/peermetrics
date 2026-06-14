@@ -91,38 +91,29 @@ Both **api** and **web** have the same backend:
 
 ## How to run locally
 
-### 1. Clone repo
+If you want the shortest path from clone to `first useful dashboard`, use
+the guide in [STARTER_KIT.md](STARTER_KIT.md).
 
-Fastest way to get started is to pull this repo and use docker compose
+For most people evaluating Peermetrics locally, these are the only commands
+you need:
 
 ```sh
 git clone https://github.com/peermetrics/peermetrics
 cd peermetrics
-```
-
-### 2. Start docker
-
-**Option A: Using Docker Hub images (may have migration issues)**
-
-You can start all containers using the pre-built images:
-
-```sh
 docker compose up
 ```
 
-**Option B: Using development setup (Recommended)**
+Then open `http://localhost:8080` and follow
+[STARTER_KIT.md](STARTER_KIT.md) to:
 
-For a more reliable setup that builds from source and includes all migrations:
+- create your first app
+- copy its API key
+- send one real test session
+- confirm the session appears in the dashboard
 
-```sh
-# First, clone the api and web repos in the same parent directory
-git clone https://github.com/peermetrics/api
-git clone https://github.com/peermetrics/web
-cd peermetrics
-
-# Then use the dev docker-compose file
-docker compose -f docker-compose.dev.yaml up
-```
+If you are actively developing the `api` or `web` services from source
+instead of just validating the full stack, use the `Development` section
+below and `docker-compose.dev.yaml`.
 
 The API service will automatically:
 - Run database migrations
