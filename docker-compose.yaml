@@ -11,6 +11,7 @@ services:
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
       - web_static:/app/web
       - api_static:/app/api
+      - ./test:/app/test:ro
 
     depends_on:
       - api
