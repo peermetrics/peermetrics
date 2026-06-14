@@ -27,8 +27,8 @@ A simple HTML/vanilla JavaScript tool to test your PeerMetrics setup with WebRTC
 
 5. **Start the test**:
    - Click "Start Test Call"
-   - Allow camera/microphone permissions when prompted
-   - The tool will create a WebRTC connection and start sending metrics to PeerMetrics
+   - If the browser prompts for camera/microphone permissions, allow them for a full media test, or deny them and continue with a data-channel-only validation
+   - The tool will create a WebRTC connection and start sending metrics to PeerMetrics either way
    - Watch the logs for status updates
 
 6. **View metrics**:
@@ -56,6 +56,6 @@ A simple HTML/vanilla JavaScript tool to test your PeerMetrics setup with WebRTC
   - Check that the API is running on port 8081
   - Verify the API key is correct
   - Check browser console for CORS errors
-- **No video**: Make sure you granted camera/microphone permissions
+- **No video**: This is OK for a connection-only validation; only troubleshoot permissions if you specifically want to test media tracks
 - **Connection fails**: Check that both API and web services are running
 

@@ -94,6 +94,13 @@ Both **api** and **web** have the same backend:
 If you want the shortest path from clone to `first useful dashboard`, use
 the guide in [STARTER_KIT.md](STARTER_KIT.md).
 
+Important platform note: the published Docker images are currently `amd64`
+only. On Apple Silicon (`arm64`) Macs, use Docker's x86 emulation:
+
+```sh
+DOCKER_DEFAULT_PLATFORM=linux/amd64 docker compose up
+```
+
 For most people evaluating Peermetrics locally, these are the only commands
 you need:
 
@@ -101,6 +108,12 @@ you need:
 git clone https://github.com/peermetrics/peermetrics
 cd peermetrics
 docker compose up
+```
+
+On Apple Silicon, replace the last line with:
+
+```sh
+DOCKER_DEFAULT_PLATFORM=linux/amd64 docker compose up
 ```
 
 Then open `http://localhost:8080` and follow
@@ -114,6 +127,9 @@ Then open `http://localhost:8080` and follow
 If you are actively developing the `api` or `web` services from source
 instead of just validating the full stack, use the `Development` section
 below and `docker-compose.dev.yaml`.
+That development flow expects the separate `web` and `api` repositories to be
+checked out into `./web` and `./api`; cloning this repo alone is not enough for
+`docker-compose.dev.yaml`.
 
 The API service will automatically:
 - Run database migrations
