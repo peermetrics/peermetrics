@@ -266,9 +266,10 @@
         <div class="content">
             <div class="config-section">
                 <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 12px; margin-bottom: 15px; border-radius: 4px;">
-                    <strong>⚠️ Permissions Note:</strong> This tool requires camera and/or microphone access. 
-                    If you see permission errors, click the lock icon in your browser's address bar and allow media access, 
-                    or check your browser settings. The tool will work with video-only, audio-only, or even without media (using data channels).
+                    <strong>Permissions Note:</strong> Camera and microphone access is optional for the quick-start test.
+                    If you allow media access, this tool will run a full audio/video test.
+                    If you deny access or do not have devices connected, it will fall back to video-only, audio-only,
+                    or a data-channel-only connection so you can still validate your PeerMetrics setup.
                 </div>
                 <h2>Configuration</h2>
                 <div class="form-group">
@@ -365,7 +366,7 @@
 
         function getMediaErrorMessage(error) {
             const errorMessages = {
-                'NotAllowedError': 'Permission denied. Please allow camera/microphone access in your browser settings.',
+                'NotAllowedError': 'Permission denied. Media access is optional, so you can continue without it or allow camera/microphone access in your browser settings for a full media test.',
                 'NotFoundError': 'No camera/microphone found. Please connect a device and try again.',
                 'NotReadableError': 'Camera/microphone is being used by another application. Please close other apps and try again.',
                 'OverconstrainedError': 'Requested constraints cannot be satisfied. Your device may not support the requested settings.',
