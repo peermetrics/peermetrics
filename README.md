@@ -67,7 +67,7 @@ Drilldown into each participant's connection to get insights about how their con
 ![image](https://github.com/peermetrics/peermetrics/assets/1862405/1849dcf8-abc8-4292-8ef9-a35aed671ef0)
 
 ## Demo
-Try the live [DEMO](https://peermetrics.io/how-it-works).
+Try the live [DEMO](https://peermetrics.io/demo/).
 
 ## How it works
 
